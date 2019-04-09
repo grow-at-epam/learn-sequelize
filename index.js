@@ -120,6 +120,13 @@ sequelize.sync()
         // the association is created with alias *Dependency*
         await questions[1].setDependency(options1[1]);
 
+
+        const submission = await Submission.create({});
+
+        submission.setSurvey(survey);
+        submission.setQuestion(questions[0]);
+        submission.setOption(options1[0]);
+
     });
 
 function bulkCreateOptions(...titles) {
