@@ -20,7 +20,7 @@ Survey.init({
     title: Sequelize.STRING(200),
     active: Sequelize.BOOLEAN,
     language: Sequelize.ENUM("zh", "en")
-}, { sequelize, underscored });
+}, { sequelize, underscored, modelName: "surveys" });
 
 
 // question
@@ -31,8 +31,15 @@ Question.init({
     title: Sequelize.STRING,
     type: Sequelize.ENUM('single', 'multiple', 'text'),
     allowText: Sequelize.BOOLEAN,
-}, { sequelize, underscored });
+}, { sequelize, underscored, modelName: "questions" });
 
+
+// join table
+class SurveysQuestions extends Sequelize.Model {
+}
+SurveysQuestions.init({
+    sequenceNum: Sequelize.INTEGER
+}, { sequelize, underscored, modelName: "surveysQuestions" });
 
 // options of questions
 class Option extends Sequelize.Model {
@@ -40,7 +47,7 @@ class Option extends Sequelize.Model {
 
 Option.init({
     title: Sequelize.STRING
-}, { sequelize, underscored });
+}, { sequelize, underscored, modelName: "options" });
 
 
 // submission
@@ -49,15 +56,15 @@ class Submission extends Sequelize.Model {
 
 Submission.init({
     freeText: Sequelize.STRING(200)
-}, { sequelize, underscored });
+}, { sequelize, underscored, modelName: "submissions" });
 
 
 /**
  * Survey has a many-to-many relationship with Question,
  * and the link table name is *SurveyQuestion*.
  */
-Survey.belongsToMany(Question, { through: "SurveysQuestions" });
-Question.belongsToMany(Survey, { through: "SurveysQuestions" });
+Question.belongsToMany(Survey, { through: SurveysQuestions });
+Survey.belongsToMany(Question, { through: SurveysQuestions });
 
 
 /**
@@ -106,7 +113,8 @@ sequelize.sync()
         }]);
 
 
-        await survey.setQuestions(questions);
+        await survey.addQuestion(questions[0], { through: {sequenceNum: 100} });
+        await survey.addQuestion(questions[1], { through: {sequenceNum: 90} });
 
 
         const options1 = await bulkCreateOptions("Man", "Woman");
@@ -127,6 +135,21 @@ sequelize.sync()
         submission.setQuestion(questions[0]);
         submission.setOption(options1[0]);
 
+    })
+    .then(async () => {
+        const all = await Survey.findAll({
+            include: [
+                {
+                    model: Question,
+                    include: [
+                        {
+                            model: Option
+                        }
+                    ]
+                }
+            ]
+        });
+        console.log(all);
     });
 
 function bulkCreateOptions(...titles) {
