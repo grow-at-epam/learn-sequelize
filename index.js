@@ -46,7 +46,8 @@ class Option extends Sequelize.Model {
 }
 
 Option.init({
-    title: Sequelize.STRING
+    title: Sequelize.STRING,
+    sequenceNum: Sequelize.INTEGER,
 }, { sequelize, underscored, modelName: "options" });
 
 
@@ -153,6 +154,6 @@ sequelize.sync()
     });
 
 function bulkCreateOptions(...titles) {
-    const options = titles.map(title => ({ title }));
+    const options = titles.map((title, i) => ({ title, sequenceNum: i + 1 }));
     return Option.bulkCreate(options);
 }
