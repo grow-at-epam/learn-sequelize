@@ -127,8 +127,6 @@ sequelize.sync()
         const questionOptionAssociations = await questions[0].setOptions(options1, { through: { sequenceNum: 2 } });
         await questions[1].setOptions(options2, { through: { sequenceNum: 1 } });
 
-        console.log(questionOptionAssociations);
-
 
         const survey = await Survey.create({
             title: "Choose Your Gift!",
@@ -148,11 +146,10 @@ sequelize.sync()
         await survey.addQuestion(questions[2], { through: { sequenceNum: 200 } });
 
 
-        const submission = await Submission.create({
-            questionOptionId: questionOptionAssociations[0][1].getDataValue("id")
+        await Submission.create({
+            questionOptionId: questionOptionAssociations[0][1].getDataValue("id"),
+            surveyId: survey.id
         });
-
-        submission.setSurvey(survey);
 
     })
     .then(async () => {
@@ -168,7 +165,7 @@ sequelize.sync()
                 }
             ]
         });
-        console.log(all);
+        //console.log(all);
     });
 
 function bulkCreateOptions(...titles) {
