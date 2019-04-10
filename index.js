@@ -29,17 +29,21 @@ class Question extends Sequelize.Model {
 
 Question.init({
     title: Sequelize.STRING,
-    type: Sequelize.ENUM('single', 'multiple', 'text'),
-    allowText: Sequelize.BOOLEAN,
+    type: Sequelize.ENUM('single', 'multiple', 'text')
 }, { sequelize, underscored, modelName: "questions" });
 
 
 // join table
-class SurveysQuestions extends Sequelize.Model {
+class SurveyQuestion extends Sequelize.Model {
 }
-SurveysQuestions.init({
-    sequenceNum: Sequelize.INTEGER
-}, { sequelize, underscored, modelName: "surveysQuestions" });
+
+SurveyQuestion.init({
+    sequenceNum: Sequelize.INTEGER,
+    skippable: Sequelize.BOOLEAN,
+    dependsOn: Sequelize.INTEGER,
+    dependencyType: Sequelize.ENUM("selected", "not-selected")
+}, { sequelize, underscored, modelName: "surveyQuestion" });
+
 
 // options of questions
 class Option extends Sequelize.Model {
@@ -47,8 +51,22 @@ class Option extends Sequelize.Model {
 
 Option.init({
     title: Sequelize.STRING,
-    sequenceNum: Sequelize.INTEGER,
+    allowFreeText: Sequelize.BOOLEAN,
 }, { sequelize, underscored, modelName: "options" });
+
+
+// options of questions
+class QuestionOption extends Sequelize.Model {
+}
+
+QuestionOption.init({
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    sequenceNum: Sequelize.INTEGER
+}, { sequelize, underscored, modelName: "questionOption" });
 
 
 // submission
@@ -56,7 +74,8 @@ class Submission extends Sequelize.Model {
 }
 
 Submission.init({
-    freeText: Sequelize.STRING(200)
+    freeText: Sequelize.STRING(200),
+    questionOptionId: Sequelize.INTEGER
 }, { sequelize, underscored, modelName: "submissions" });
 
 
@@ -64,19 +83,14 @@ Submission.init({
  * Survey has a many-to-many relationship with Question,
  * and the link table name is *SurveyQuestion*.
  */
-Question.belongsToMany(Survey, { through: SurveysQuestions });
-Survey.belongsToMany(Question, { through: SurveysQuestions });
+Question.belongsToMany(Survey, { through: SurveyQuestion });
+Survey.belongsToMany(Question, { through: SurveyQuestion });
 
 
 /**
  * one-to-many association
  */
-Question.hasMany(Option);
-Question.belongsTo(Option, {
-    as: "Dependency",
-    foreignKey: "dependsOn",
-    constraints: false
-});
+Question.belongsToMany(Option, { through: QuestionOption });
 
 
 /**
@@ -86,8 +100,6 @@ Question.belongsTo(Option, {
  *  (3) the answer of a Free-Text question.
  */
 Submission.belongsTo(Survey);
-Submission.belongsTo(Question);
-Submission.belongsTo(Option);
 
 
 /**
@@ -96,6 +108,28 @@ Submission.belongsTo(Option);
  */
 sequelize.sync()
     .then(async () => {
+        const questions = await Question.bulkCreate([{
+            title: "Man or Woman?",
+            type: "single"
+        }, {
+            title: "Choose Your favorite Colors",
+            type: "multiple"
+        }, {
+            title: "Suggestions",
+            type: "text"
+        }]);
+
+
+        const options1 = await bulkCreateOptions("Man", "Woman");
+        const options2 = await bulkCreateOptions("Red", "Orange", "Yellow", "Green", "Purple", "Blue");
+
+
+        const questionOptionAssociations = await questions[0].setOptions(options1, { through: { sequenceNum: 2 } });
+        await questions[1].setOptions(options2, { through: { sequenceNum: 1 } });
+
+        console.log(questionOptionAssociations);
+
+
         const survey = await Survey.create({
             title: "Choose Your Gift!",
             active: true,
@@ -103,38 +137,22 @@ sequelize.sync()
         });
 
 
-        const questions = await Question.bulkCreate([{
-            title: "Man or Woman?",
-            type: "single",
-            allowText: true
-        }, {
-            title: "Choose Your Color",
-            type: "single",
-            allowText: false
-        }]);
+        await survey.addQuestion(questions[0], { through: { sequenceNum: 100 } });
+        await survey.addQuestion(questions[1], {
+            through: {
+                sequenceNum: 90,
+                dependsOn: questionOptionAssociations[0][1].getDataValue("id"),
+                dependencyType: "selected"
+            }
+        });
+        await survey.addQuestion(questions[2], { through: { sequenceNum: 200 } });
 
 
-        await survey.addQuestion(questions[0], { through: {sequenceNum: 100} });
-        await survey.addQuestion(questions[1], { through: {sequenceNum: 90} });
-
-
-        const options1 = await bulkCreateOptions("Man", "Woman");
-        const options2 = await bulkCreateOptions("Red", "Orange", "Yellow", "Green", "Purple", "Blue");
-
-
-        await questions[0].setOptions(options1);
-        await questions[1].setOptions(options2);
-
-
-        // the association is created with alias *Dependency*
-        await questions[1].setDependency(options1[1]);
-
-
-        const submission = await Submission.create({});
+        const submission = await Submission.create({
+            questionOptionId: questionOptionAssociations[0][1].getDataValue("id")
+        });
 
         submission.setSurvey(survey);
-        submission.setQuestion(questions[0]);
-        submission.setOption(options1[0]);
 
     })
     .then(async () => {
