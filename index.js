@@ -100,6 +100,7 @@ Question.belongsToMany(Option, { through: QuestionOption });
  *  (3) the answer of a Free-Text question.
  */
 Submission.belongsTo(Survey);
+Submission.belongsTo(Question);
 
 
 /**
@@ -148,7 +149,8 @@ sequelize.sync()
 
         await Submission.create({
             questionOptionId: questionOptionAssociations[0][1].getDataValue("id"),
-            surveyId: survey.id
+            surveyId: survey.id,
+            questionId: questions[0].id
         });
 
     })
