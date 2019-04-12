@@ -1,107 +1,12 @@
-const Sequelize = require("sequelize");
-
-const sequelize = new Sequelize({
-    database: "post_checkout_survey",
-    username: "huaichao",
-    password: "test123456",
-    dialect: "mysql",
-    host: "localhost",
-    port: 3306,
-});
-
-const underscored = true;
-
-
-// survey
-class Survey extends Sequelize.Model {
-}
-
-Survey.init({
-    title: Sequelize.STRING(200),
-    active: Sequelize.BOOLEAN,
-    language: Sequelize.ENUM("zh", "en")
-}, { sequelize, underscored, modelName: "surveys" });
-
-
-// question
-class Question extends Sequelize.Model {
-}
-
-Question.init({
-    title: Sequelize.STRING,
-    type: Sequelize.ENUM('single', 'multiple', 'text')
-}, { sequelize, underscored, modelName: "questions" });
-
-
-// join table
-class SurveyQuestion extends Sequelize.Model {
-}
-
-SurveyQuestion.init({
-    sequenceNum: Sequelize.INTEGER,
-    skippable: Sequelize.BOOLEAN,
-    dependsOn: Sequelize.INTEGER,
-    dependencyType: Sequelize.ENUM("selected", "not-selected")
-}, { sequelize, underscored, modelName: "surveyQuestion" });
-
-
-// options of questions
-class Option extends Sequelize.Model {
-}
-
-Option.init({
-    title: Sequelize.STRING,
-    allowFreeText: Sequelize.BOOLEAN,
-}, { sequelize, underscored, modelName: "options" });
-
-
-// options of questions
-class QuestionOption extends Sequelize.Model {
-}
-
-QuestionOption.init({
-    id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    sequenceNum: Sequelize.INTEGER
-}, { sequelize, underscored, modelName: "questionOption" });
-
-
-// submission
-class Submission extends Sequelize.Model {
-}
-
-Submission.init({
-    freeText: Sequelize.STRING(200),
-    questionOptionId: Sequelize.INTEGER
-}, { sequelize, underscored, modelName: "submissions" });
-
-
-/**
- * Survey has a many-to-many relationship with Question,
- * and the link table name is *SurveyQuestion*.
- */
-Question.belongsToMany(Survey, { through: SurveyQuestion });
-Survey.belongsToMany(Question, { through: SurveyQuestion });
-
-
-/**
- * one-to-many association
- */
-Question.belongsToMany(Option, { through: QuestionOption });
-
-
-/**
- * A submission is one of the following:
- *  (1) the selection of a Single-Selection question;
- *  (2) one of the selections of a Multi-Selection question;
- *  (3) the answer of a Free-Text question.
- */
-Submission.belongsTo(Survey);
-Submission.belongsTo(Question);
-
+const {
+    sequelize,
+    Survey,
+    Question,
+    Option,
+    Submission,
+    SurveyQuestion,
+    QuestionOption
+} = require("./models");
 
 /**
  * Generating schema in the database.
@@ -150,12 +55,13 @@ sequelize.sync()
         await Submission.create({
             questionOptionId: questionOptionAssociations[0][1].getDataValue("id"),
             surveyId: survey.id,
-            questionId: questions[0].id
+            questionId: questions[0].id,
+            freeText: "hello"
         });
 
     })
     .then(async () => {
-        const all = await Survey.findAll({
+        const surveys = await Survey.findAll({
             include: [
                 {
                     model: Question,
@@ -167,7 +73,29 @@ sequelize.sync()
                 }
             ]
         });
-        //console.log(all);
+        const payload = surveys.map(survey => {
+            return {
+                id: survey.id,
+                title: survey.title,
+                language: survey.language,
+                questions: survey.questions.map(question => ({
+                    id: question.id,
+                    type: question.type,
+                    title: question.title,
+                    sequenceNum: question.sequenceNum,
+                    skippable: question.skippable,
+                    dependsOn: question.dependsOn,
+                    dependencyType: question.dependencyType,
+                    options: question.options.map(option => ({
+                        id: option.questionOption.id,
+                        title: option.title,
+                        sequenceNum: option.sequenceNum,
+                        allowFreeText: option.allowFreeText
+                    }))
+                }))
+            };
+        });
+        console.log(JSON.stringify(payload));
     });
 
 function bulkCreateOptions(...titles) {
