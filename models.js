@@ -1,4 +1,5 @@
 const Sequelize = require("sequelize");
+const { QUESTION_TYPE, LANG, DEPENDENCY_TYPE } = require("./SurveyConstants");
 
 const sequelize = new Sequelize({
     database: "post_checkout_survey",
@@ -32,7 +33,7 @@ class Survey extends Sequelize.Model {
 Survey.init({
     title: Sequelize.STRING(200),
     active: Sequelize.BOOLEAN,
-    language: Sequelize.ENUM("zh", "en"),
+    language: Sequelize.ENUM(LANG.ZH, LANG.EN),
     ...timestampColumns
 }, { ...commonModelOptions, modelName: "surveys" });
 
@@ -42,7 +43,7 @@ class Question extends Sequelize.Model {
 
 Question.init({
     title: Sequelize.STRING,
-    type: Sequelize.ENUM("single", "multiple", "text"),
+    type: Sequelize.ENUM(QUESTION_TYPE.SINGLE, QUESTION_TYPE.MULTIPLE, QUESTION_TYPE.TEXT),
     ...timestampColumns
 }, { ...commonModelOptions, modelName: "questions" });
 
@@ -54,7 +55,7 @@ SurveyQuestion.init({
     sequenceNum: Sequelize.INTEGER,
     skippable: Sequelize.BOOLEAN,
     dependsOn: Sequelize.INTEGER,
-    dependencyType: Sequelize.ENUM("selected", "not-selected"),
+    dependencyType: Sequelize.ENUM(DEPENDENCY_TYPE.NOT_SELECTED, DEPENDENCY_TYPE.SELECTED),
     ...timestampColumns
 }, { ...commonModelOptions, modelName: "surveyQuestion" });
 
