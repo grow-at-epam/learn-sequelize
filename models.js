@@ -5,7 +5,7 @@ const sequelize = new Sequelize({
     username: process.env.SURVEY_DB_USER,
     password: process.env.SURVEY_DB_PASS,
     dialect: "mysql",
-    host: "localhost",
+    host: process.env.SURVEY_DB_HOST,
     port: 3306,
 });
 
