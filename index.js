@@ -118,6 +118,76 @@ async function insertSampleDataEN() {
     // });
 }
 
+async function insertSampleDataZH() {
+    const questions = await Question.bulkCreate([{
+        title: "您的性别？",
+        type: "single"
+    }, {
+        title: "请选择您喜欢的颜色。",
+        type: "multiple"
+    }, {
+        title: "以下哪个是您首选的支付方式？",
+        type: "single"
+    }, {
+        title: "您以首选的支付方式支付成功了吗？",
+        type: "single"
+    }, {
+        title: "您今天的购买计划已经完成了吗？",
+        type: "single"
+    }, {
+        title: "如果没有，请问有什么未能满足您的需要？",
+        type: "text"
+    }, {
+        title: "您是否查询了尺寸表或使用了尺寸指南？",
+        type: "single"
+    }, {
+        title: "您上次购买博柏利产品是在什么时候？",
+        type: "single"
+    }, {
+        title: "您上次购买博柏利产品是在何种平台？",
+        type: "single"
+    }]);
+
+
+    const options1 = await bulkCreateOptions(true, "男", "女");
+    const options2 = await bulkCreateOptions(true, "红", "橙", "黄", "绿", "紫", "蓝");
+
+    const options3 = await bulkCreateOptions(false, "支付宝", "微信", "中国银联", "Master", "Visa", "American Express");
+    const options4 = await bulkCreateOptions(false, "是", "否");
+    const options5 = await bulkCreateOptions(false, "是", "否");
+    const options6 = await bulkCreateOptions(false, "是", "否");
+
+    const options7 = await bulkCreateOptions(false, "当月", "半年内", "更久以前");
+    const options8 = await bulkCreateOptions(false, "博柏利官方网站", "天猫", "微信商城", "博柏利实体店");
+
+
+    linkQuestionAndOption(questions[0], options1);
+    linkQuestionAndOption(questions[1], options2);
+    linkQuestionAndOption(questions[2], options3);
+    linkQuestionAndOption(questions[3], options4);
+    linkQuestionAndOption(questions[4], options5);
+    linkQuestionAndOption(questions[6], options6);
+    linkQuestionAndOption(questions[7], options7);
+    linkQuestionAndOption(questions[8], options8);
+
+
+    const survey = await Survey.create({
+        title: "博柏利客户问卷调查！",
+        active: true,
+        language: LANG.ZH
+    });
+
+    await survey.addQuestion(questions[0], { through: { sequenceNum: 1, skippable: false } });
+    await survey.addQuestion(questions[1], { through: { sequenceNum: 2, skippable: true } });
+    await survey.addQuestion(questions[2], { through: { sequenceNum: 3, skippable: false } });
+    await survey.addQuestion(questions[3], { through: { sequenceNum: 4, skippable: false } });
+    await survey.addQuestion(questions[4], { through: { sequenceNum: 5, skippable: false } });
+    await survey.addQuestion(questions[5], { through: { sequenceNum: 6, skippable: true } });
+    await survey.addQuestion(questions[6], { through: { sequenceNum: 7, skippable: false } });
+    await survey.addQuestion(questions[7], { through: { sequenceNum: 8, skippable: false } });
+    await survey.addQuestion(questions[8], { through: { sequenceNum: 9, skippable: false } });
+}
+
 async function getAllSurveys() {
     const surveys = await Survey.findAll({
         where: { active: true },
@@ -166,6 +236,7 @@ async function getAllSurveys() {
 async function main() {
     await sequelize.sync();
     await insertSampleDataEN();
+    await insertSampleDataZH();
     await getAllSurveys();
 }
 
