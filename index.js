@@ -1,7 +1,7 @@
 const _ = require("lodash");
 const { QUESTION_TYPE, LANG, DEPENDENCY_TYPE } = require("./SurveyConstants");
+const { sequelize } = require("./connector");
 const {
-    sequelize,
     Survey,
     Question,
     Option,
@@ -234,6 +234,7 @@ async function getAllSurveys() {
 }
 
 async function main() {
+    await sequelize.authenticate();
     await sequelize.sync();
     await insertSampleDataEN();
     await insertSampleDataZH();

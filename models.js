@@ -1,14 +1,7 @@
 const Sequelize = require("sequelize");
 const { QUESTION_TYPE, LANG, DEPENDENCY_TYPE } = require("./SurveyConstants");
 
-const sequelize = new Sequelize({
-    database: "post_checkout_survey",
-    username: process.env.SURVEY_DB_USER,
-    password: process.env.SURVEY_DB_PASS,
-    dialect: "mysql",
-    host: process.env.SURVEY_DB_HOST,
-    port: 3306,
-});
+const { sequelize } = require("./connector");
 
 const timestampColumns = {
     createdAt: {
@@ -119,7 +112,6 @@ Submission.belongsTo(Survey);
 Submission.belongsTo(Question);
 
 module.exports = {
-    sequelize,
     Survey,
     Question,
     Option,
