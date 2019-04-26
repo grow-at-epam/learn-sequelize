@@ -61,9 +61,9 @@ async function insertSampleDataEN() {
 
 
     const options1 = await bulkCreateOptions(true, "Man", "Woman");
-    const options2 = await bulkCreateOptions(true, "Red", "Orange", "Yellow", "Green", "Purple", "Blue");
+    const options2 = await bulkCreateOptions(true, "Red", "Orange", "Yellow", "Green", "Purple Purple Purple Purple Purple Purple Purple Purple Purple Purple Purple Purple Purple Purple Purple Purple", "Blue", "Pink", "Rose", "Grass", "Ocean", "Violet");
 
-    const options3 = await bulkCreateOptions(false, "Alipay", "WeChat", "China UnionPay", "Master", "Visa", "American Express");
+    const options3 = await bulkCreateOptions(false, "Alipay", "WeChat", "China UnionPay", "Master", "Visa", "American Express American Express American Express American Express American Express American Express American Express", "ICBC","ABC","BOC","CCB","COMM","CITIC","CEB","HXBANK","CMBC","GDB");
     const options4 = await bulkCreateOptions(false, "Yes", "No");
     const options5 = await bulkCreateOptions(false, "Yes", "No");
     const options6 = await bulkCreateOptions(false, "Yes", "No");
@@ -150,9 +150,9 @@ async function insertSampleDataZH() {
 
 
     const options1 = await bulkCreateOptions(true, "男", "女");
-    const options2 = await bulkCreateOptions(true, "红", "橙", "黄", "绿", "紫", "蓝");
+    const options2 = await bulkCreateOptions(true, "红色", "橙色", "黄色", "绿色", "紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色紫色", "蓝色", "粉色", "玫瑰红", "草绿色", "海蓝色", "紫罗兰色");
 
-    const options3 = await bulkCreateOptions(false, "支付宝", "微信", "中国银联", "Master", "Visa", "American Express");
+    const options3 = await bulkCreateOptions(false, "支付宝", "微信", "中国银联", "Master", "Visa", "American Express American Express American Express American Express American Express American Express American Express", "工商银行","农业银行","中国银行","建设银行","交通银行","中信银行","光大银行","华夏银行","民生银行","广发银行");
     const options4 = await bulkCreateOptions(false, "是", "否");
     const options5 = await bulkCreateOptions(false, "是", "否");
     const options6 = await bulkCreateOptions(false, "是", "否");
