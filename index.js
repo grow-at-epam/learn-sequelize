@@ -83,7 +83,7 @@ async function insertSampleDataEN() {
 
 
     const survey = await Survey.create({
-        title: "Choose Your Gift!",
+        title: "====== EN ======",
         active: true,
         language: LANG.EN
     });
@@ -172,7 +172,7 @@ async function insertSampleDataZH() {
 
 
     const survey = await Survey.create({
-        title: "博柏利客户问卷调查！",
+        title: "====== ZH ======",
         active: true,
         language: LANG.ZH
     });
@@ -186,6 +186,130 @@ async function insertSampleDataZH() {
     await survey.addQuestion(questions[6], { through: { sequenceNum: 7, skippable: false } });
     await survey.addQuestion(questions[7], { through: { sequenceNum: 8, skippable: false } });
     await survey.addQuestion(questions[8], { through: { sequenceNum: 9, skippable: false } });
+}
+
+async function insertSampleDataEN2() {
+    const questions = await Question.bulkCreate([{
+        title: "What was your first choice for payment method?",
+        type: "single"
+    }, {
+        title: "Were you able to check out using this payment method?",
+        type: "single"
+    }, {
+        title: "Were you able to purchase everything you intended to purchase today?",
+        type: "single"
+    }, {
+        title: "If not, what was the trouble?",
+        type: "text"
+    }, {
+        title: "Did you use the size guide/help?",
+        type: "single"
+    }, {
+        title: "When was your last purchase of burberry?",
+        type: "single"
+    }, {
+        title: "Where did you make the purchase?",
+        type: "single"
+    }, {
+        title: "In which age range are you looking for the products?",
+        type: "single"
+    }]);
+
+
+    const options0 = await bulkCreateOptions(false, "Alipay", "WeChat", "China UnionPay", "Master", "Visa", "American Express");
+    const options1 = await bulkCreateOptions(false, "Yes", "No");
+    const options2 = await bulkCreateOptions(false, "Yes", "No");
+    const options4 = await bulkCreateOptions(false, "Yes", "No");
+    const options5 = await bulkCreateOptions(false, "Within current month", "No more than 6 months ago", "Longer ago");
+    const options6 = await bulkCreateOptions(false, "Official website", "Tmall", "WeChat", "Burberry physical stores");
+    const options7 = await bulkCreateOptions(false, "Below 30", "30 - 40", "40 - 50", "Above 50");
+
+
+    linkQuestionAndOption(questions[0], options0);
+    linkQuestionAndOption(questions[1], options1);
+    linkQuestionAndOption(questions[2], options2);
+    linkQuestionAndOption(questions[4], options4);
+    linkQuestionAndOption(questions[5], options5);
+    linkQuestionAndOption(questions[6], options6);
+    linkQuestionAndOption(questions[7], options7);
+
+
+    const survey = await Survey.create({
+        title: "Burberry Post Checkout Survey",
+        active: true,
+        language: LANG.EN
+    });
+
+    await survey.addQuestion(questions[0], { through: { sequenceNum: 11, skippable: false } });
+    await survey.addQuestion(questions[1], { through: { sequenceNum: 12, skippable: false } });
+    await survey.addQuestion(questions[2], { through: { sequenceNum: 13, skippable: false } });
+    await survey.addQuestion(questions[3], { through: { sequenceNum: 14, skippable: false } });
+    await survey.addQuestion(questions[4], { through: { sequenceNum: 15, skippable: false } });
+    await survey.addQuestion(questions[5], { through: { sequenceNum: 16, skippable: false } });
+    await survey.addQuestion(questions[6], { through: { sequenceNum: 17, skippable: false } });
+    await survey.addQuestion(questions[7], { through: { sequenceNum: 18, skippable: false } });
+}
+
+async function insertSampleDataZH2() {
+    const questions = await Question.bulkCreate([{
+        title: "以下哪个是您首选的支付方式？",
+        type: "single"
+    }, {
+        title: "您以首选的支付方式支付成功了吗？",
+        type: "single"
+    }, {
+        title: "您今天的购买计划已经完成了吗？",
+        type: "single"
+    }, {
+        title: "如果没有，请问有什么未能满足您的需要？",
+        type: "text"
+    }, {
+        title: "您是否查询了尺寸表或使用了尺寸指南？",
+        type: "single"
+    }, {
+        title: "您上次购买博柏利产品是在什么时候？",
+        type: "single"
+    }, {
+        title: "您上次购买博柏利产品是在何种平台？",
+        type: "single"
+    }, {
+        title: "请问您查找的是哪个年龄段的产品？",
+        type: "single"
+    }]);
+
+
+    const options0 = await bulkCreateOptions(false, "支付宝", "微信", "中国银联", "Master", "Visa", "American Express");
+    const options1 = await bulkCreateOptions(false, "是", "否");
+    const options2 = await bulkCreateOptions(false, "是", "否");
+    const options4 = await bulkCreateOptions(false, "是", "否");
+    const options5 = await bulkCreateOptions(false, "当月", "半年内", "更久以前");
+    const options6 = await bulkCreateOptions(false, "博柏利官方网站", "天猫", "微信商城", "博柏利实体店");
+    const options7 = await bulkCreateOptions(false, "30岁以下", "30 - 40", "40 - 50", "50岁以上");
+
+
+    linkQuestionAndOption(questions[0], options0);
+    linkQuestionAndOption(questions[1], options1);
+    linkQuestionAndOption(questions[2], options2);
+    linkQuestionAndOption(questions[4], options4);
+    linkQuestionAndOption(questions[5], options5);
+    linkQuestionAndOption(questions[6], options6);
+    linkQuestionAndOption(questions[7], options7);
+
+
+    const survey = await Survey.create({
+        title: "博柏利客户问卷调查！",
+        active: true,
+        language: LANG.ZH
+    });
+
+    await survey.addQuestion(questions[0], { through: { sequenceNum: 11, skippable: false } });
+    await survey.addQuestion(questions[1], { through: { sequenceNum: 12, skippable: false } });
+    await survey.addQuestion(questions[2], { through: { sequenceNum: 13, skippable: false } });
+    await survey.addQuestion(questions[3], { through: { sequenceNum: 14, skippable: false } });
+    await survey.addQuestion(questions[4], { through: { sequenceNum: 15, skippable: false } });
+    await survey.addQuestion(questions[5], { through: { sequenceNum: 16, skippable: false } });
+    await survey.addQuestion(questions[6], { through: { sequenceNum: 17, skippable: false } });
+    await survey.addQuestion(questions[7], { through: { sequenceNum: 18, skippable: false } });
 }
 
 async function getAllSurveys() {
@@ -238,6 +362,8 @@ async function main() {
     await sequelize.sync();
     await insertSampleDataEN();
     await insertSampleDataZH();
+    await insertSampleDataEN2();
+    await insertSampleDataZH2();
     await getAllSurveys();
 }
 
