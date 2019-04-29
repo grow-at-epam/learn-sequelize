@@ -20,7 +20,7 @@ function bulkCreateOptions(allowFreeText, ...titles) {
 }
 
 async function linkQuestionAndOption(question, options) {
-    const sequenceNumbers = _.shuffle(_.times(options.length, i => i + 1));
+    const sequenceNumbers = _.times(options.length, i => i + 1);
     const questionOptions = _.map(sequenceNumbers, (num, i) => ({
         questionId: question.id,
         optionId: options[i].id,
@@ -84,7 +84,7 @@ async function insertSampleDataEN() {
 
     const survey = await Survey.create({
         title: "====== EN ======",
-        active: true,
+        active: false,
         language: LANG.EN
     });
 
@@ -173,7 +173,7 @@ async function insertSampleDataZH() {
 
     const survey = await Survey.create({
         title: "====== ZH ======",
-        active: true,
+        active: false,
         language: LANG.ZH
     });
 
@@ -190,6 +190,9 @@ async function insertSampleDataZH() {
 
 async function insertSampleDataEN2() {
     const questions = await Question.bulkCreate([{
+        title: "In which age range are you looking for the products?",
+        type: "single"
+    }, {
         title: "What was your first choice for payment method?",
         type: "single"
     }, {
@@ -210,32 +213,29 @@ async function insertSampleDataEN2() {
     }, {
         title: "Where did you make the purchase?",
         type: "single"
-    }, {
-        title: "In which age range are you looking for the products?",
-        type: "single"
     }]);
 
 
-    const options0 = await bulkCreateOptions(false, "Alipay", "WeChat", "China UnionPay", "Master", "Visa", "American Express");
-    const options1 = await bulkCreateOptions(false, "Yes", "No");
+    const options0 = await bulkCreateOptions(false, "Below 30", "30 - 40", "40 - 50", "Above 50");
+    const options1 = await bulkCreateOptions(false, "Alipay", "WeChat", "China UnionPay", "Master", "Visa", "American Express");
     const options2 = await bulkCreateOptions(false, "Yes", "No");
-    const options4 = await bulkCreateOptions(false, "Yes", "No");
-    const options5 = await bulkCreateOptions(false, "Within current month", "No more than 6 months ago", "Longer ago");
-    const options6 = await bulkCreateOptions(false, "Official website", "Tmall", "WeChat", "Burberry physical stores");
-    const options7 = await bulkCreateOptions(false, "Below 30", "30 - 40", "40 - 50", "Above 50");
+    const options3 = await bulkCreateOptions(false, "Yes", "No");
+    const options5 = await bulkCreateOptions(false, "Yes", "No");
+    const options6 = await bulkCreateOptions(false, "Within current month", "No more than 6 months ago", "Longer ago");
+    const options7 = await bulkCreateOptions(false, "Official website", "Tmall", "WeChat", "Burberry physical stores");
 
 
     linkQuestionAndOption(questions[0], options0);
     linkQuestionAndOption(questions[1], options1);
     linkQuestionAndOption(questions[2], options2);
-    linkQuestionAndOption(questions[4], options4);
+    linkQuestionAndOption(questions[3], options3);
     linkQuestionAndOption(questions[5], options5);
     linkQuestionAndOption(questions[6], options6);
     linkQuestionAndOption(questions[7], options7);
 
 
     const survey = await Survey.create({
-        title: "Burberry Post Checkout Survey",
+        // title: "Burberry Post Checkout Survey",
         active: true,
         language: LANG.EN
     });
@@ -244,7 +244,7 @@ async function insertSampleDataEN2() {
     await survey.addQuestion(questions[1], { through: { sequenceNum: 12, skippable: false } });
     await survey.addQuestion(questions[2], { through: { sequenceNum: 13, skippable: false } });
     await survey.addQuestion(questions[3], { through: { sequenceNum: 14, skippable: false } });
-    await survey.addQuestion(questions[4], { through: { sequenceNum: 15, skippable: false } });
+    await survey.addQuestion(questions[4], { through: { sequenceNum: 15, skippable: true } });
     await survey.addQuestion(questions[5], { through: { sequenceNum: 16, skippable: false } });
     await survey.addQuestion(questions[6], { through: { sequenceNum: 17, skippable: false } });
     await survey.addQuestion(questions[7], { through: { sequenceNum: 18, skippable: false } });
@@ -252,6 +252,9 @@ async function insertSampleDataEN2() {
 
 async function insertSampleDataZH2() {
     const questions = await Question.bulkCreate([{
+        title: "请问您查找的是哪个年龄段的产品？",
+        type: "single"
+    }, {
         title: "以下哪个是您首选的支付方式？",
         type: "single"
     }, {
@@ -272,32 +275,29 @@ async function insertSampleDataZH2() {
     }, {
         title: "您上次购买博柏利产品是在何种平台？",
         type: "single"
-    }, {
-        title: "请问您查找的是哪个年龄段的产品？",
-        type: "single"
     }]);
 
 
-    const options0 = await bulkCreateOptions(false, "支付宝", "微信", "中国银联", "Master", "Visa", "American Express");
-    const options1 = await bulkCreateOptions(false, "是", "否");
+    const options0 = await bulkCreateOptions(false, "30岁以下", "30 - 40", "40 - 50", "50岁以上");
+    const options1 = await bulkCreateOptions(false, "支付宝", "微信", "中国银联", "Master", "Visa", "American Express");
     const options2 = await bulkCreateOptions(false, "是", "否");
-    const options4 = await bulkCreateOptions(false, "是", "否");
-    const options5 = await bulkCreateOptions(false, "当月", "半年内", "更久以前");
-    const options6 = await bulkCreateOptions(false, "博柏利官方网站", "天猫", "微信商城", "博柏利实体店");
-    const options7 = await bulkCreateOptions(false, "30岁以下", "30 - 40", "40 - 50", "50岁以上");
+    const options3 = await bulkCreateOptions(false, "是", "否");
+    const options5 = await bulkCreateOptions(false, "是", "否");
+    const options6 = await bulkCreateOptions(false, "当月", "半年内", "更久以前");
+    const options7 = await bulkCreateOptions(false, "博柏利官方网站", "天猫", "微信商城", "博柏利实体店");
 
 
     linkQuestionAndOption(questions[0], options0);
     linkQuestionAndOption(questions[1], options1);
     linkQuestionAndOption(questions[2], options2);
-    linkQuestionAndOption(questions[4], options4);
+    linkQuestionAndOption(questions[3], options3);
     linkQuestionAndOption(questions[5], options5);
     linkQuestionAndOption(questions[6], options6);
     linkQuestionAndOption(questions[7], options7);
 
 
     const survey = await Survey.create({
-        title: "博柏利客户问卷调查！",
+        // title: "博柏利客户问卷调查！",
         active: true,
         language: LANG.ZH
     });
@@ -306,7 +306,7 @@ async function insertSampleDataZH2() {
     await survey.addQuestion(questions[1], { through: { sequenceNum: 12, skippable: false } });
     await survey.addQuestion(questions[2], { through: { sequenceNum: 13, skippable: false } });
     await survey.addQuestion(questions[3], { through: { sequenceNum: 14, skippable: false } });
-    await survey.addQuestion(questions[4], { through: { sequenceNum: 15, skippable: false } });
+    await survey.addQuestion(questions[4], { through: { sequenceNum: 15, skippable: true } });
     await survey.addQuestion(questions[5], { through: { sequenceNum: 16, skippable: false } });
     await survey.addQuestion(questions[6], { through: { sequenceNum: 17, skippable: false } });
     await survey.addQuestion(questions[7], { through: { sequenceNum: 18, skippable: false } });
